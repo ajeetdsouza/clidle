@@ -49,7 +49,7 @@ func (db *db) save() error {
 	if err != nil {
 		return errors.Wrap(err, "could not serialize database")
 	}
-	if err := maybe.WriteFile(dbPath, data, 0o644); err != nil {
+	if err := maybe.WriteFile(dbPath, data, 0644); err != nil {
 		return errors.Wrapf(err, "could not write to database: %s", dbPath)
 	}
 	return nil

@@ -215,7 +215,7 @@ func (m *model) doDeleteChar() tea.Cmd {
 }
 
 // doExit exits the program.
-func (m *model) doExit() tea.Cmd {
+func (*model) doExit() tea.Cmd {
 	return tea.Quit
 }
 
@@ -229,7 +229,7 @@ func (m *model) doResize(msg tea.WindowSizeMsg) tea.Cmd {
 // doWin is called when the user has guessed the word correctly.
 func (m *model) doWin() tea.Cmd {
 	m.gameOver = true
-	return sequentially(
+	return tea.Sequentially(
 		m.withDb(func(db *db) {
 			db.addWin(m.gridRow)
 			m.score = db.score()
@@ -242,7 +242,7 @@ func (m *model) doWin() tea.Cmd {
 func (m *model) doLoss() tea.Cmd {
 	m.gameOver = true
 	msg := fmt.Sprintf("The word was %s. Better luck next time!", string(m.word[:]))
-	return sequentially(
+	return tea.Sequentially(
 		m.withDb(func(db *db) {
 			db.addLoss()
 			m.score = db.score()
@@ -353,7 +353,7 @@ func (m *model) viewKeyboardRow(keys []string) string {
 }
 
 // viewKey renders a key with the given name and color.
-func (_ *model) viewKey(key string, color lipgloss.TerminalColor) string {
+func (*model) viewKey(key string, color lipgloss.TerminalColor) string {
 	return lipgloss.NewStyle().
 		Padding(0, 1).
 		Border(lipgloss.NormalBorder()).
@@ -415,22 +415,6 @@ func (s keyState) color() lipgloss.Color {
 		return colorCorrect
 	default:
 		panic("invalid key status")
-	}
-}
-
-// FIXME: replace with tea.Sequentially
-// https://github.com/charmbracelet/bubbletea/pull/214
-func sequentially(cmds ...tea.Cmd) tea.Cmd {
-	return func() tea.Msg {
-		for _, cmd := range cmds {
-			if cmd == nil {
-				continue
-			}
-			if msg := cmd(); msg != nil {
-				return msg
-			}
-		}
-		return nil
 	}
 }
 

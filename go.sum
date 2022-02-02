@@ -1,7 +1,7 @@
 github.com/adrg/xdg v0.4.0 h1:RzRqFcjH4nE5C6oTAxhBtoE2IRyjBSa62SCbyPidvls=
 github.com/adrg/xdg v0.4.0/go.mod h1:N6ag73EX4wyxeaoeHctc1mas01KZgsj5tYiAIwqJE/E=
-github.com/charmbracelet/bubbletea v0.19.4-0.20220131220437-77e63ac89037 h1:dlKlZNPkKgzCW/LeNGY9Al3qOGBiUOy+2Axs5bZS5KY=
-github.com/charmbracelet/bubbletea v0.19.4-0.20220131220437-77e63ac89037/go.mod h1:5nPeULOIxbAMykb3ggwhw1kruS7nP+Y4Za9yEH4J27U=
+github.com/charmbracelet/bubbletea v0.19.4-0.20220202015352-c5d3b1e1544a h1:D4RqRJSEKvggU+aCND2Q/5y/eGpecrJ0QYUcqK4kdp4=
+github.com/charmbracelet/bubbletea v0.19.4-0.20220202015352-c5d3b1e1544a/go.mod h1:5nPeULOIxbAMykb3ggwhw1kruS7nP+Y4Za9yEH4J27U=
 github.com/charmbracelet/lipgloss v0.4.0 h1:768h64EFkGUr8V5yAKV7/Ta0NiVceiPaV+PphaW1K9g=
 github.com/charmbracelet/lipgloss v0.4.0/go.mod h1:vmdkHvce7UzX6xkyf4cca8WlwdQ5RQr8fzta+xl7BOM=
 github.com/containerd/console v1.0.2 h1:Pi6D+aZXM+oUw1czuKgH5IJ+y0jhYcwBJfx5/Ghn9dE=
