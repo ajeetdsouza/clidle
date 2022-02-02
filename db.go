@@ -6,14 +6,9 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/adrg/xdg"
 	"github.com/google/renameio/maybe"
 	"github.com/pkg/errors"
 )
-
-// dbPath is the path to the database file.
-// This is usually set to ~/.local/share/clidle/db.json on most UNIX systems.
-var dbPath = filepath.Join(xdg.DataHome, "clidle", "db.json")
 
 // db is the file where the game statistics are stored.
 type db struct {
@@ -25,7 +20,7 @@ type db struct {
 
 // loadDb reads the database from dbPath.
 func loadDb() (*db, error) {
-	file, err := os.Open(dbPath)
+	file, err := os.Open(pathDb)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return &db{}, nil
@@ -41,7 +36,7 @@ func loadDb() (*db, error) {
 
 // save atomically (best effort) writes the database to dbPath.
 func (db *db) save() error {
-	dir := filepath.Dir(dbPath)
+	dir := filepath.Dir(pathDb)
 	if err := os.MkdirAll(dir, 0755); err != nil {
 		return errors.Wrapf(err, "could not create data directory: %s", dir)
 	}
@@ -49,8 +44,8 @@ func (db *db) save() error {
 	if err != nil {
 		return errors.Wrap(err, "could not serialize database")
 	}
-	if err := maybe.WriteFile(dbPath, data, 0644); err != nil {
-		return errors.Wrapf(err, "could not write to database: %s", dbPath)
+	if err := maybe.WriteFile(pathDb, data, 0644); err != nil {
+		return errors.Wrapf(err, "could not write to database: %s", pathDb)
 	}
 	return nil
 }
