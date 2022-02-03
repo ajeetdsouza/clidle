@@ -50,7 +50,7 @@ func runServer(addr string) {
 
 	server, err := wish.NewServer(
 		wish.WithAddress(addr),
-		wish.WithMaxTimeout(30*time.Minute),
+		wish.WithIdleTimeout(30*time.Minute),
 		wish.WithMiddleware(
 			bm.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
 				pty, _, active := s.Pty()

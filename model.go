@@ -130,12 +130,15 @@ func (m *model) reset() {
 
 // setStatus sets the status message, and returns a tea.Cmd that restores the
 // default status message after a delay.
-func (m *model) setStatus(msg string) tea.Cmd {
+func (m *model) setStatus(msg string, duration time.Duration) tea.Cmd {
 	m.status = msg
-	m.statusPending++
-	return tea.Tick(5*time.Second, func(time.Time) tea.Msg {
-		return msgResetStatus{}
-	})
+	if duration > 0 {
+		m.statusPending++
+		return tea.Tick(duration, func(time.Time) tea.Msg {
+			return msgResetStatus{}
+		})
+	}
+	return nil
 }
 
 // resetStatus immediately resets the status message to its default value.
@@ -151,13 +154,13 @@ func (m *model) doAcceptWord() tea.Cmd {
 
 	// Only accept a word if it is complete.
 	if m.gridCol != numChars {
-		return m.setStatus("Your guess must be a 5-letter word.")
+		return m.setStatus("Your guess must be a 5-letter word.", 1*time.Second)
 	}
 
 	// Check if the input word is valid.
 	word := m.grid[m.gridRow]
 	if !isWord(string(word[:])) {
-		return m.setStatus("That's not a valid word.")
+		return m.setStatus("That's not a valid word.", 1*time.Second)
 	}
 
 	// Update the state of the used letters.
@@ -234,7 +237,7 @@ func (m *model) doWin() tea.Cmd {
 			db.addWin(m.gridRow)
 			m.score = db.score()
 		}),
-		m.setStatus("You win! Press [Enter] to play again."),
+		m.setStatus("You win!", 0),
 	)
 }
 
@@ -247,7 +250,7 @@ func (m *model) doLoss() tea.Cmd {
 			db.addLoss()
 			m.score = db.score()
 		}),
-		m.setStatus(msg),
+		m.setStatus(msg, 0),
 	)
 }
 
@@ -276,6 +279,11 @@ func (m *model) viewGrid() string {
 func (m *model) viewGridRowFilled(word [numChars]byte) string {
 	var keyStates [numChars]keyState
 	letters := m.word
+
+	// Mark keyStatusAbsent.
+	for i := 0; i < numChars; i++ {
+		keyStates[i] = keyStateAbsent
+	}
 
 	// Mark keyStatusCorrect.
 	for i := 0; i < numChars; i++ {
@@ -395,7 +403,7 @@ func (m *model) withDb(f func(db *db)) tea.Cmd {
 // reportError stores the given error and prints a message to the status line.
 func (m *model) reportError(err error, msg string) tea.Cmd {
 	m.errors = append(m.errors, err)
-	return m.setStatus(msg)
+	return m.setStatus(msg, 3*time.Second)
 }
 
 // msgResetStatus is sent when the status line should be reset.
