@@ -234,7 +234,7 @@ func (m *model) doWin() tea.Cmd {
 			db.addWin(m.gridRow)
 			m.score = db.score()
 		}),
-		m.setStatus("You win!"),
+		m.setStatus("You win! Press [Enter] to play again."),
 	)
 }
 
