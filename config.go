@@ -20,8 +20,7 @@ var (
 	pathDb      = filepath.Join(pathClidle, "db.json")
 	pathHostKey = filepath.Join(pathClidle, "hostkey")
 
-	flagServe = flag.Bool("serve", false, "Spawns an SSH server")
-	flagPort  = flag.Int("port", 22, "Changes the server port")
+	flagServe = flag.String("serve", "", "Spawns an SSH server on the given address (format: 0.0.0.0:1337)")
 
 	teaOptions = []tea.ProgramOption{tea.WithAltScreen(), tea.WithOutput(os.Stderr)}
 )

@@ -19,8 +19,8 @@ import (
 
 func main() {
 	flag.Parse()
-	if *flagServe {
-		runServer(*flagPort)
+	if addr := *flagServe; addr != "" {
+		runServer(addr)
 	} else {
 		runCli()
 	}
@@ -42,14 +42,14 @@ func runCli() {
 	os.Exit(exitCode)
 }
 
-func runServer(port int) {
+func runServer(addr string) {
 	withHostKey := wish.WithHostKeyPath(pathHostKey)
 	if pem, ok := os.LookupEnv(envHostKey); ok {
 		withHostKey = wish.WithHostKeyPEM([]byte(pem))
 	}
 
 	server, err := wish.NewServer(
-		wish.WithAddress(fmt.Sprintf("0.0.0.0:%d", port)),
+		wish.WithAddress(addr),
 		wish.WithMaxTimeout(30*time.Minute),
 		wish.WithMiddleware(
 			bm.Middleware(func(s ssh.Session) (tea.Model, []tea.ProgramOption) {
