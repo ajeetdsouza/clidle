@@ -287,6 +287,9 @@ func (m *model) viewGridRowFilled(word [numChars]byte) string {
 
 	// Mark keyStatusPresent.
 	for i := 0; i < numChars; i++ {
+		if keyStates[i] == keyStateCorrect {
+			continue
+		}
 		if foundIdx := bytes.IndexByte(letters[:], word[i]); foundIdx != -1 {
 			keyStates[i] = keyStatePresent
 			letters[foundIdx] = 0
