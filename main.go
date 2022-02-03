@@ -28,7 +28,7 @@ func main() {
 
 func runCli() {
 	model := &model{}
-	program := tea.NewProgram(model, tea.WithAltScreen(), tea.WithOutput(os.Stderr))
+	program := tea.NewProgram(model, teaOptions...)
 
 	exitCode := 0
 	if err := program.Start(); err != nil {

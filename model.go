@@ -274,16 +274,29 @@ func (m *model) viewGrid() string {
 // viewGridRowFilled renders a filled-in grid row. It chooses the appropriate
 // color for each key.
 func (m *model) viewGridRowFilled(word [numChars]byte) string {
+	var keyStates [numChars]keyState
+	letters := m.word
+
+	// Mark keyStatusCorrect.
+	for i := 0; i < numChars; i++ {
+		if word[i] == m.word[i] {
+			keyStates[i] = keyStateCorrect
+			letters[i] = 0
+		}
+	}
+
+	// Mark keyStatusPresent.
+	for i := 0; i < numChars; i++ {
+		if foundIdx := bytes.IndexByte(letters[:], word[i]); foundIdx != -1 {
+			keyStates[i] = keyStatePresent
+			letters[foundIdx] = 0
+		}
+	}
+
+	// Render keys.
 	var keys [numChars]string
 	for i := 0; i < numChars; i++ {
-		key := word[i]
-		keyStatus := keyStateAbsent
-		if key == m.word[i] {
-			keyStatus = keyStateCorrect
-		} else if bytes.IndexByte(m.word[:], key) != -1 {
-			keyStatus = keyStatePresent
-		}
-		keys[i] = m.viewKey(string(key), keyStatus.color())
+		keys[i] = m.viewKey(string(word[i]), keyStates[i].color())
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Bottom, keys[:]...)
 }
