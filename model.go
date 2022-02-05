@@ -105,7 +105,7 @@ func (m *model) View() string {
 		keyboard = ""
 	}
 
-	game := lipgloss.JoinVertical(lipgloss.Center, status, grid, keyboard)
+	game := lipgloss.JoinVertical(lipgloss.Center, status, grid, keyboard, _controls)
 	return lipgloss.Place(m.width, m.height, lipgloss.Center, lipgloss.Center, game)
 }
 
@@ -256,7 +256,7 @@ func (m *model) doLoss() tea.Cmd {
 
 // viewStatus renders the status line.
 func (m *model) viewStatus() string {
-	return m.status
+	return lipgloss.NewStyle().Foreground(colorPrimary).Render(m.status)
 }
 
 // viewGrid renders the grid.
@@ -325,7 +325,7 @@ func (m *model) viewGridRowCurrent(row [numChars]byte, rowIdx int) string {
 		} else {
 			key = " "
 		}
-		keys[i] = m.viewKey(key, keyStateUnselected.color())
+		keys[i] = m.viewKey(key, colorPrimary)
 	}
 	return lipgloss.JoinHorizontal(lipgloss.Bottom, keys[:]...)
 }
@@ -409,6 +409,14 @@ func (m *model) reportError(err error, msg string) tea.Cmd {
 // msgResetStatus is sent when the status line should be reset.
 type msgResetStatus struct{}
 
+const (
+	colorPrimary   = lipgloss.Color("#d7dadc")
+	colorSecondary = lipgloss.Color("#626262")
+	colorSeparator = lipgloss.Color("#9c9c9c")
+	colorYellow    = lipgloss.Color("#b59f3b")
+	colorGreen     = lipgloss.Color("#538d4e")
+)
+
 // keyState represents the state of a key.
 type keyState int
 
@@ -421,26 +429,27 @@ const (
 
 // color returns the appropriate dark mode color for the given key state.
 func (s keyState) color() lipgloss.Color {
-	const (
-		colorPrimary = lipgloss.Color("#d7dadc")
-		colorAbsent  = lipgloss.Color("#3a3a3c")
-		colorPresent = lipgloss.Color("#b59f3b")
-		colorCorrect = lipgloss.Color("#538d4e")
-	)
-
 	switch s {
 	case keyStateUnselected:
 		return colorPrimary
 	case keyStateAbsent:
-		return colorAbsent
+		return colorSecondary
 	case keyStatePresent:
-		return colorPresent
+		return colorYellow
 	case keyStateCorrect:
-		return colorCorrect
+		return colorGreen
 	default:
 		panic("invalid key status")
 	}
 }
+
+var _controls = fmt.Sprintf("%s %s %s %s %s",
+	lipgloss.NewStyle().Foreground(colorPrimary).Render("ctrl+c"),
+	lipgloss.NewStyle().Foreground(colorSecondary).Render("quit"),
+	lipgloss.NewStyle().Foreground(colorSeparator).Render("//"),
+	lipgloss.NewStyle().Foreground(colorPrimary).Render("ctrl+r"),
+	lipgloss.NewStyle().Foreground(colorSecondary).Render("restart"),
+)
 
 // isAsciiUpper checks if a rune is between A-Z.
 func isAsciiUpper(r rune) bool {
