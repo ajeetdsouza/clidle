@@ -6,7 +6,6 @@
 
 <img align="right" alt="Preview" width="50%" src="preview.png" />
 
-
 **Try it:**
 
 ```sh
@@ -31,6 +30,8 @@ After submitting a guess, the letters will turn green, yellow, or gray.
 - **Green:** The letter is correct, and is in the correct position.
 - **Yellow:** The letter is present in the solution, but is in the wrong position.
 - **Gray:** The letter is not present in the solution.
+
+## Scoring
 
 Your final score is based on how many guesses it took to arrive at the solution:
 
