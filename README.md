@@ -15,7 +15,7 @@ ssh clidle.ddns.net -p 3000
 **Or, run it locally:**
 
 ```sh
-go install github.com/ajeetdsouza/clidle
+go install github.com/ajeetdsouza/clidle@latest
 ```
 
 </div>
