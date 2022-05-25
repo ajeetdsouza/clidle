@@ -9,7 +9,7 @@
 **Try it:**
 
 ```sh
-ssh clidle.ddns.net -p 3000
+ssh clidle.duckdns.org -p 3000
 ```
 
 **Or, run it locally:**
