@@ -27,9 +27,9 @@ import (
 var (
 	// pathClidle is the path to the local data directory.
 	// This is usually set to ~/.local/share/clidle on most UNIX systems.
-	pathClidle  = filepath.Join(xdg.DataHome, "clidle")
-	pathStore   = filepath.Join(pathClidle, "clidle.db")
-	pathHostKey = filepath.Join(pathClidle, "hostkey")
+	pathClidle  string
+	pathStore   string
+	pathHostKey string
 
 	//go:embed schema.sql
 	schemaSQL string
@@ -40,6 +40,16 @@ var (
 		tea.WithOutput(os.Stderr),
 	}
 )
+
+func init() {
+	pathClidle = os.Getenv("CLIDLE_DATA_DIR")
+	if pathClidle == "" {
+		pathClidle = filepath.Join(xdg.DataHome, "clidle")
+	}
+
+	pathStore = filepath.Join(pathClidle, "clidle.db")
+	pathHostKey = filepath.Join(pathClidle, "hostkey")
+}
 
 func main() {
 	flagServe := flag.String("serve", "", "Spawns an SSH server on the given address (format: 0.0.0.0:1337)")
