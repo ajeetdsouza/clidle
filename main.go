@@ -72,7 +72,7 @@ func runCLI() error {
 	if err != nil {
 		return err
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	ctx := context.Background()
 	model := newModel(ctx, store.New(db), EnglishDictionary)
@@ -87,7 +87,7 @@ func runServer(addr string) error {
 	if err != nil {
 		return errors.Wrapf(err, "could not open database")
 	}
-	defer db.Close()
+	defer func() { _ = db.Close() }()
 
 	queries := store.New(db)
 	server, err := wish.NewServer(
@@ -148,7 +148,7 @@ func openDB() (*sql.DB, error) {
 	db.SetMaxOpenConns(1) // SQLite does not support concurrent writes
 
 	if _, err := db.Exec(schemaSQL); err != nil {
-		db.Close()
+		_ = db.Close()
 		return nil, err
 	}
 	return db, nil

@@ -208,7 +208,7 @@ func (m *model) saveGuess(guess string) error {
 // doAcceptChar adds one input character to the current word.
 func (m *model) doAcceptChar(ch rune) tea.Cmd {
 	// Only accept a character if the current word is incomplete.
-	if m.gameOver || !(m.gridRow < _numGuesses && m.gridCol < _numChars) {
+	if m.gameOver || m.gridRow >= _numGuesses || m.gridCol >= _numChars {
 		return nil
 	}
 
