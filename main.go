@@ -68,13 +68,14 @@ func main() {
 }
 
 func runCLI() error {
-	queries, err := getStore()
+	db, err := openDB()
 	if err != nil {
 		return err
 	}
+	defer db.Close()
 
 	ctx := context.Background()
-	model := newModel(ctx, queries, EnglishDictionary)
+	model := newModel(ctx, store.New(db), EnglishDictionary)
 	program := tea.NewProgram(model, teaOptions...)
 
 	_, err = program.Run()
@@ -82,11 +83,13 @@ func runCLI() error {
 }
 
 func runServer(addr string) error {
-	queries, err := getStore()
+	db, err := openDB()
 	if err != nil {
-		return errors.Wrapf(err, "could not open store")
+		return errors.Wrapf(err, "could not open database")
 	}
+	defer db.Close()
 
+	queries := store.New(db)
 	server, err := wish.NewServer(
 		wish.WithAddress(addr),
 		wish.WithIdleTimeout(30*time.Minute),
@@ -133,7 +136,7 @@ func runServer(addr string) error {
 	return errors.Wrapf(err, "could not shutdown server")
 }
 
-func getStore() (*store.Queries, error) {
+func openDB() (*sql.DB, error) {
 	if err := os.MkdirAll(pathClidle, 0700); err != nil {
 		return nil, err
 	}
@@ -143,8 +146,10 @@ func getStore() (*store.Queries, error) {
 		return nil, err
 	}
 	db.SetMaxOpenConns(1) // SQLite does not support concurrent writes
+
 	if _, err := db.Exec(schemaSQL); err != nil {
+		db.Close()
 		return nil, err
 	}
-	return store.New(db), nil
+	return db, nil
 }
