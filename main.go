@@ -68,11 +68,13 @@ func main() {
 }
 
 func runCLI() error {
-	ctx := context.Background()
-	model, err := getModel(ctx)
+	queries, err := getStore()
 	if err != nil {
 		return err
 	}
+
+	ctx := context.Background()
+	model := newModel(ctx, queries, EnglishDictionary)
 	program := tea.NewProgram(model, teaOptions...)
 
 	_, err = program.Run()
@@ -80,6 +82,11 @@ func runCLI() error {
 }
 
 func runServer(addr string) error {
+	queries, err := getStore()
+	if err != nil {
+		return errors.Wrapf(err, "could not open store")
+	}
+
 	server, err := wish.NewServer(
 		wish.WithAddress(addr),
 		wish.WithIdleTimeout(30*time.Minute),
@@ -88,14 +95,11 @@ func runServer(addr string) error {
 				pty, _, active := session.Pty()
 				if !active {
 					wish.Fatalf(session, "no active terminal, skipping")
+					return nil, nil
 				}
 
 				ctx := session.Context()
-				model, err := getModel(ctx)
-				if err != nil {
-					slog.Error("could not create model", slog.Any("error", err))
-					wish.Fatalf(session, "could not create model: %v\n", err)
-				}
+				model := newModel(ctx, queries, EnglishDictionary)
 				model.windowWidth = pty.Window.Width
 				model.windowHeight = pty.Window.Height
 
@@ -127,15 +131,6 @@ func runServer(addr string) error {
 
 	err = server.Shutdown(ctx)
 	return errors.Wrapf(err, "could not shutdown server")
-}
-
-func getModel(ctx context.Context) (*model, error) {
-	dictionary := EnglishDictionary
-	store, err := getStore()
-	if err != nil {
-		return nil, err
-	}
-	return newModel(ctx, store, dictionary), nil
 }
 
 func getStore() (*store.Queries, error) {
